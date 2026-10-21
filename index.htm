@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WE SELL TIME · 5 Minutes Experience</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #38bdf8;
+            --accent-success: #22c55e;
+            --accent-error: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        header p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .timer-bar-container {
+            width: 100%;
+            background-color: var(--border-color);
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .timer-bar {
+            width: 100%;
+            height: 100%;
+            background-color: var(--accent);
+            transition: width 1s linear;
+        }
+
+        .badge {
+            align-self: flex-start;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background-color: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            letter-spacing: 1px;
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 14px 18px;
+            border-radius: 8px;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-btn:hover {
+            background-color: rgba(56, 189, 248, 0.1);
+            border-color: var(--accent);
+        }
+
+        .feedback-card {
+            display: none;
+            background-color: rgba(255, 255, 255, 0.02);
+            border-left: 4px solid var(--accent);
+            padding: 16px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .feedback-card.correct {
+            border-left-color: var(--accent-success);
+        }
+
+        .feedback-card.incorrect {
+            border-left-color: var(--accent-error);
+        }
+
+        .action-btn {
+            background-color: var(--accent);
+            color: var(--bg-color);
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+            width: 100%;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            opacity: 0.9;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .completion-screen {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .completion-screen h2 {
+            font-size: 1.8rem;
+            color: var(--accent);
+        }
+
+        .completion-screen p {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>WE SELL TIME</h1>
+        <p>5 MINUTES. A DIFFERENT PERSPECTIVE.</p>
+    </header>
+
+    <!-- Start View -->
+    <div id="start-view" class="completion-screen">
+        <h2>Ready for your 5-minute break?</h2>
+        <p>Engage in a curated sequence of riddles, practical decisions, calculations, and fresh perspectives.</p>
+        <button class="action-btn" onclick="startSession()">Start Experience</button>
+    </div>
+
+    <!-- Active Session View -->
+    <div id="session-view" class="hidden" style="display: flex; flex-direction: column; gap: 20px;">
+        <div class="timer-bar-container">
+            <div id="timer-bar" class="timer-bar"></div>
+        </div>
+
+        <div id="category-badge" class="badge">Category</div>
+
+        <div id="prompt-text" class="question-text">Loading content...</div>
+
+        <div id="options-container" class="options-grid"></div>
+
+        <div id="feedback-card" class="feedback-card">
+            <strong id="feedback-status"></strong>
+            <p id="feedback-explanation" style="margin-top: 6px;"></p>
+            <p id="feedback-takeaway" style="margin-top: 8px; color: var(--accent); font-style: italic;"></p>
+        </div>
+
+        <button id="next-btn" class="action-btn hidden" onclick="loadNextCard()">Continue</button>
+    </div>
+
+    <!-- Completion View -->
+    <div id="end-view" class="completion-screen hidden">
+        <h2>Time Complete</h2>
+        <p>You have taken 5 minutes to think, discover, and reflect. Carry this perspective with you today.</p>
+        <button class="action-btn" onclick="resetToHome()">Return Home</button>
+    </div>
+</div>
+
+<script>
+    let remainingTime = 300; // 5 minutes
+    let timerInterval = null;
+    let seenIds = [];
+    let currentCard = null;
+
+    function startSession() {
+        document.getElementById('start-view').classList.add('hidden');
+        document.getElementById('session-view').classList.remove('hidden');
+        document.getElementById('end-view').classList.add('hidden');
+        
+        remainingTime = 300;
+        seenIds = [];
+        updateTimerBar();
+
+        timerInterval = setInterval(() => {
+            remainingTime--;
+            updateTimerBar();
+            if (remainingTime <= 0) {
+                endSession();
+            }
+        }, 1000);
+
+        loadNextCard();
+    }
+
+    function updateTimerBar() {
+        const percentage = (remainingTime / 300) * 100;
+        document.getElementById('timer-bar').style.width = percentage + '%';
+    }
+
+    async function loadNextCard() {
+        document.getElementById('feedback-card').style.display = 'none';
+        document.getElementById('next-btn').classList.add('hidden');
+        document.getElementById('options-container').innerHTML = '';
+
+        try {
+            const response = await fetch('/api/next-card', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ seen_ids: seenIds })
+            });
+
+            if (!response.ok) {
+                endSession();
+                return;
+            }
+
+            currentCard = await response.json();
+            seenIds.push(currentCard.id);
+
+            document.getElementById('category-badge').innerText = currentCard.category;
+            document.getElementById('prompt-text').innerText = currentCard.prompt;
+
+            const optionsContainer = document.getElementById('options-container');
+            currentCard.options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => selectOption(opt);
+                optionsContainer.appendChild(btn);
+            });
+
+        } catch (error) {
+            console.error("Error fetching card:", error);
+        }
+    }
+
+    function selectOption(selectedOpt) {
+        const buttons = document.querySelectorAll('.option-btn');
+        buttons.forEach(btn => btn.disabled = true);
+
+        const isCorrect = selectedOpt === currentCard.correct_answer;
+        const feedbackCard = document.getElementById('feedback-card');
+        const feedbackStatus = document.getElementById('feedback-status');
+
+        feedbackCard.style.display = 'block';
+        if (isCorrect) {
+            feedbackCard.className = 'feedback-card correct';
+            feedbackStatus.innerText = 'Correct';
+        } else {
+            feedbackCard.className = 'feedback-card incorrect';
+            feedbackStatus.innerText = `Incorrect. Correct answer: ${currentCard.correct_answer}`;
+        }
+
+        document.getElementById('feedback-explanation').innerText = currentCard.explanation;
+        document.getElementById('feedback-takeaway').innerText = `Key Takeaway: ${currentCard.takeaway}`;
+
+        document.getElementById('next-btn').classList.remove('hidden');
+    }
+
+    function endSession() {
+        clearInterval(timerInterval);
+        document.getElementById('session-view').classList.add('hidden');
+        document.getElementById('end-view').classList.remove('hidden');
+    }
+
+    function resetToHome() {
+        document.getElementById('end-view').classList.add('hidden');
+        document.getElementById('start-view').classList.remove('hidden');
+    }
+</script>
+</body>
+</html>
